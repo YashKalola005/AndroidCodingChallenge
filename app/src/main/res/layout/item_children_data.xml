@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_5sdp">
+
+    <ImageView
+        android:id="@+id/user_mage"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:padding="@dimen/_3sdp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/place_holder"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="The United States has announced financial sanctions against rebel territories freshly recognised by Russia in eastern Ukraine. I have signed an Executive Order to deny Russia the chance to profit from its blatant violations of international law. We are continuing to closely consult with Allies and partners, including Ukraine, on next steps, President Joe Biden said while signing the executive order. The United States also said it will impose two sanctions on Russia tomorrow."
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        app:layout_constraintRight_toLeftOf="@id/star"
+        app:layout_constraintEnd_toStartOf="@id/star"
+        app:layout_constraintStart_toEndOf="@+id/user_mage"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/author"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:textColor="@color/Gray"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintEnd_toStartOf="@id/star"
+        app:layout_constraintRight_toLeftOf="@id/star"
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        tools:text="Author" />
+
+    <ImageView
+        android:id="@+id/star"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:padding="@dimen/_2sdp"
+        android:layout_margin="@dimen/_5sdp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/fav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/btn_delete"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:background="@drawable/btn_bg"
+        android:paddingHorizontal="@dimen/_15sdp"
+        android:paddingVertical="@dimen/_4sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10sdp"
+        android:text="Delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/author"
+         />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0.4dp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:background="@color/Gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_delete" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

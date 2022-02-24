@@ -1,7 +1,9 @@
 # AndroidCodingChallenge
 
 Application that fetches top posts from Reddit using Reddit API.
+
 Brings in posts paginated as 25 posts per page.
+
 Allows users to mark posts as read, delete posts from their feed list and clear all posts.
 
 Developer Notes:

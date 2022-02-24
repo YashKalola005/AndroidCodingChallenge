@@ -36,7 +36,7 @@ class MainActivity : BaseActivity() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var adapter: MainAdapter
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     private lateinit var myPreferences: MyPreferences
     private var after: String? = ""
 
@@ -53,6 +53,9 @@ class MainActivity : BaseActivity() {
         return R.layout.activity_main
     }
 
+    /**
+     * Initialize preferences and view model
+     */
     override fun initView() {
         myPreferences = MyPreferences(activity)
         val retrofitService = RetrofitService.getInstance()
@@ -66,25 +69,31 @@ class MainActivity : BaseActivity() {
         setUpRecyclerView()
     }
 
+    /**
+     * Listener for Refresh and Click actions
+     */
     override fun setListener() {
         binding.swipeRefresh.setOnRefreshListener {
             adapter.clearData()
             after = ""
-
             binding.swipeRefresh.isRefreshing = false
             getData()
         }
 
         binding.btnDeleteAll.setOnClickListener {
+            deleteAllItems()
         }
     }
 
+    /**
+     * Populate Reddit top posts from the API response in UI
+     */
     override fun populateData() {
 
         viewModel.data.observe(this) {
             after = it.getData1()!!.after.toString()
 
-            adapter.addData(it, myPreferences)
+            adapter.addData(it)
         }
 
         viewModel.errorMessage.observe(this) {
@@ -107,11 +116,11 @@ class MainActivity : BaseActivity() {
         return null
     }
 
-    //---------------------
+    //--------------------------
     //endregion
     //--------------------------
     //region Service Functions
-    //---------------------------
+    //--------------------------
 
     /**
      * Calls the view model function that calls the required service
@@ -124,19 +133,22 @@ class MainActivity : BaseActivity() {
         } else {
             baseUrl + "&limit=" + Constants.LIMIT + "&after=" + after
         }
-
         viewModel.getData(baseUrl)
     }
 
+    /**
+     * setUpRecyclerView
+     */
     private fun setUpRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = MainAdapter(activity, object : AdapterListener {
+
             override fun onPage() {
                 getData()
             }
 
             override fun onDelete(
-                root: ConstraintLayout,
+                root: View,
                 position: Int,
                 redditResponseList: ArrayList<RedditResponseModel.Data1Bean.ChildrenBean>
             ) {
@@ -170,6 +182,22 @@ class MainActivity : BaseActivity() {
         }, anim.duration)
     }
 
+    /**
+     * Function used to delete all items from the subreddit post list
+     */
+    private fun deleteAllItems() {
+        val anim: Animation = AnimationUtils.loadAnimation(
+            activity,
+            android.R.anim.slide_out_right
+        )
+        anim.duration = 300
+        binding.recyclerView.startAnimation(anim)
+        Handler().postDelayed(Runnable {
+
+            adapter.clearData()
+            after = ""
+        }, anim.duration)
+    }
 
     //---------------------
     //endregion

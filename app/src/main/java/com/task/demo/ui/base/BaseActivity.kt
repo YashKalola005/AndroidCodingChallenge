@@ -94,13 +94,6 @@ abstract class BaseActivity : AppCompatActivity() {
     //--------------------------
     //endregion ProgressBar
     //---------------------------
-
-    protected fun switchFragment(fragment: Fragment, id: Int) {
-        val manager: FragmentManager = supportFragmentManager
-        manager.beginTransaction().replace(id, fragment).commit()
-    }
-
-    //--------------------------
     //region PROTECTED
     //---------------------------
 

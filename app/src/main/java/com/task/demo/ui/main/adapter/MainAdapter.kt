@@ -18,6 +18,7 @@ import com.task.demo.ui.main.view.DetailsActivity
 import com.task.demo.utils.Constants
 import com.task.demo.utils.MyPreferences
 import com.task.demo.utils.AdapterListener
+import java.lang.Exception
 
 /**
  * Class MainAdapter
@@ -56,12 +57,14 @@ class MainAdapter(_activity: Activity, pageListener: AdapterListener) :
             binding.author.text = redditResponseModel.author
             Glide.with(binding.userMage.context)
                 .load(redditResponseModel.thumbnail)
+                .placeholder(activity.getDrawable(R.drawable.place_holder))
+                .error(activity.getDrawable(R.drawable.place_holder))
                 .into(binding.userMage)
 
             binding.btnDelete.setOnClickListener {
                 pageListener.onDelete(binding.root, position, redditResponseList)
             }
-            if (preferences.getBoolean(redditResponseModel.title + "isRead")) {
+            if (preferences.getBoolean(redditResponseModel.title + Constants.ISREAD)) {
                 binding.star.setImageResource(R.drawable.fav_s)
 
             } else {
@@ -70,29 +73,35 @@ class MainAdapter(_activity: Activity, pageListener: AdapterListener) :
 
             binding.star.setOnClickListener {
                 var image: Int
-                if (preferences.getBoolean(redditResponseModel.title + "isRead")) {
+                if (preferences.getBoolean(redditResponseModel.title + Constants.ISREAD)) {
                     image = R.drawable.fav
-                    preferences.setBoolean(redditResponseModel.title + "isRead", false)
+                    preferences.setBoolean(redditResponseModel.title + Constants.ISREAD, false)
                 } else {
                     image = R.drawable.fav_s
-                    preferences.setBoolean(redditResponseModel.title + "isRead", true)
+                    preferences.setBoolean(redditResponseModel.title + Constants.ISREAD, true)
                 }
                 setReadUnRead(activity, binding.star, image)
             }
 
             itemView.setOnClickListener {
-                val bundle = Bundle()
-                bundle.putSerializable("Data", redditResponseModel)
-                activity.startActivity(
-                    Intent(activity, DetailsActivity::class.java).putExtras(
-                        bundle
+                try {
+                    val bundle = Bundle()
+                    bundle.putParcelable("Data", redditResponseModel)
+                    activity.startActivity(
+                        Intent(activity, DetailsActivity::class.java).putExtras(
+                            bundle
+                        )
                     )
-                )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
             }
             if (position == redditResponseList.size - 1) {
-                if ((position + 1) % Constants.LIMIT == 0) {
+                /*if ((position + 1) % Constants.LIMIT == 0) {
                     pageListener.onPage()
-                }
+                }*/
+                pageListener.onPage()
             }
 
         }
@@ -101,24 +110,24 @@ class MainAdapter(_activity: Activity, pageListener: AdapterListener) :
          * Read/Unread status logic to indicate the read status for
          * a post using a star in the UI
          */
-        fun setReadUnRead(_activity: Activity, v: ImageView, new_image: Int) {
-            val anim_out: Animation =
+        private fun setReadUnRead(_activity: Activity, v: ImageView, new_image: Int) {
+            val animOut: Animation =
                 AnimationUtils.loadAnimation(_activity, android.R.anim.fade_out)
-            val anim_in: Animation = AnimationUtils.loadAnimation(_activity, android.R.anim.fade_in)
-            anim_out.setAnimationListener(object : Animation.AnimationListener {
+            val animIn: Animation = AnimationUtils.loadAnimation(_activity, android.R.anim.fade_in)
+            animOut.setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation) {}
                 override fun onAnimationRepeat(animation: Animation) {}
                 override fun onAnimationEnd(animation: Animation) {
                     v.setImageResource(new_image)
-                    anim_in.setAnimationListener(object : Animation.AnimationListener {
+                    animIn.setAnimationListener(object : Animation.AnimationListener {
                         override fun onAnimationStart(animation: Animation) {}
                         override fun onAnimationRepeat(animation: Animation) {}
                         override fun onAnimationEnd(animation: Animation) {}
                     })
-                    v.startAnimation(anim_in)
+                    v.startAnimation(animIn)
                 }
             })
-            v.startAnimation(anim_out)
+            v.startAnimation(animOut)
         }
     }
 
@@ -135,11 +144,10 @@ class MainAdapter(_activity: Activity, pageListener: AdapterListener) :
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) =
         holder.bind(redditResponseList, activity, position, pageListener)
 
-    fun addData(data: RedditResponseModel, myPreferences: MyPreferences) {
+    fun addData(data: RedditResponseModel) {
         data.getData1()?.children?.let {
             redditResponseList.addAll(it)
         }
-
         notifyDataSetChanged()
     }
 

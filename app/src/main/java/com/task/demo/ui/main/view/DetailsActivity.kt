@@ -21,7 +21,6 @@ class DetailsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityDetailsBinding
     private lateinit var redditResponseModel: RedditResponseModel.Data1Bean.ChildrenBean.DataBean
-    private var responseString: String = ""
 
     //--------------------------
     //region LifeCycle
@@ -36,37 +35,31 @@ class DetailsActivity : BaseActivity() {
         return R.layout.activity_details
     }
 
+    /**
+     * Parse data from the post that has been clicked on into RedditResponseModel
+     */
     override fun initView() {
         val intent = this.intent
         val bundle = intent.extras
-
-        redditResponseModel =
-            bundle!!.getSerializable("Data") as RedditResponseModel.Data1Bean.ChildrenBean.DataBean
-
-
-        /* val myList = intent.getStringArrayListExtra("Data")
-
-         responseString = myList!![0]
-         val gS = Gson()
-         childrenModel = gS.fromJson(
-             responseString,
-             ChildrenModel.Data1Bean.ChildrenBean.DataBean::class.java
-         )*/
-
-
+        redditResponseModel = bundle!!.getParcelable("Data")!!
     }
 
     override fun setListener() {
 
     }
 
+    /**
+     * Populate Reddit post details from the API response in UI
+     */
     override fun populateData() {
         binding.title.text = redditResponseModel.title
-        binding.author.text = "-" + redditResponseModel.author
+        binding.author.text = "- " + redditResponseModel.author
         binding.comments.text = redditResponseModel.numComments.toString() + " Comments"
         binding.date.text = getDate(redditResponseModel.created)
         Glide.with(activity)
             .load(redditResponseModel.url)
+            .placeholder(getDrawable(R.drawable.place_holder))
+            .error(getDrawable(R.drawable.place_holder))
             .into(binding.image)
 
 
@@ -83,8 +76,12 @@ class DetailsActivity : BaseActivity() {
     //region Private
     //---------------------------
 
+    /**
+     * Converts milliseconds into hours
+     */
     private fun getDate(created: Double): CharSequence? {
         var hours = ((created / (1000 * 60 * 60)) % 24).toString()
+        hours = hours.substringBefore(".")
         return "$hours hours ago";
 
     }

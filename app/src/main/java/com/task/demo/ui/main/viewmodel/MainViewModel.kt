@@ -15,7 +15,7 @@ import kotlinx.coroutines.*
  * @version 1.0
  * @since   2022-02-21
  */
-class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
+class MainViewModel(val mainRepository: MainRepository) : ViewModel() {
 
     val errorMessage = MutableLiveData<String>()
     val data = MutableLiveData<RedditResponseModel>()
@@ -35,7 +35,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
             withContext(Dispatchers.Main) {
                 if (response!!.isSuccessful) {
                     data.postValue(response.body())
-                    loading.value = false
+                    loading.postValue(false)
                 } else {
                     onError("Error : ${response.message()} ")
                 }

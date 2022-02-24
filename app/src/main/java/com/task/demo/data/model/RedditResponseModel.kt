@@ -1,5 +1,8 @@
 package com.task.demo.data.model
 
+import android.database.Cursor
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
@@ -57,7 +60,8 @@ class RedditResponseModel : Serializable {
             @SerializedName("data")
             var data: DataBean? = null
 
-            class DataBean : Serializable {
+            class DataBean() : Parcelable {
+
                 @SerializedName("approved_at_utc")
                 var approvedAtUtc: Any? = null
 
@@ -186,7 +190,7 @@ class RedditResponseModel : Serializable {
                 var thumbnail: String? = null
 
                 @SerializedName("edited")
-                var isEdited = false
+                var isEdited: Any? = false
 
                 @SerializedName("author_flair_css_class")
                 var authorFlairCssClass: Any? = null
@@ -393,6 +397,94 @@ class RedditResponseModel : Serializable {
                 @SerializedName("mod_reports")
                 var modReports: List<*>? = null
 
+                constructor(
+                    title: String,
+                    author: String,
+                    numComments: Int,
+                    created: Double,
+                    url: String?,
+                    thumbnail: String,
+                ) : this() {
+
+                    this.title = title
+                    this.author = author
+                    this.numComments = numComments
+                    this.created = created
+                    this.url = url
+                    this.thumbnail = thumbnail
+
+                }
+
+
+                constructor(parcel: Parcel) : this() {
+                    subreddit = parcel.readString()
+                    selftext = parcel.readString()
+                    authorFullname = parcel.readString()
+                    isSaved = parcel.readByte() != 0.toByte()
+                    gilded = parcel.readInt()
+                    isClicked = parcel.readByte() != 0.toByte()
+                    title = parcel.readString()
+                    subredditNamePrefixed = parcel.readString()
+                    isHidden = parcel.readByte() != 0.toByte()
+                    pwls = parcel.readInt()
+                    downs = parcel.readInt()
+                    thumbnailHeight = parcel.readInt()
+                    topAwardedType = parcel.readString()
+                    isHideScore = parcel.readByte() != 0.toByte()
+                    name = parcel.readString()
+                    isQuarantine = parcel.readByte() != 0.toByte()
+                    linkFlairTextColor = parcel.readString()
+                    upvoteRatio = parcel.readDouble()
+                    authorFlairBackgroundColor = parcel.readString()
+                    subredditType = parcel.readString()
+                    ups = parcel.readInt()
+                    totalAwardsReceived = parcel.readInt()
+                    thumbnailWidth = parcel.readInt()
+                    isCanModPost = parcel.readByte() != 0.toByte()
+                    score = parcel.readInt()
+                    isAuthorPremium = parcel.readByte() != 0.toByte()
+                    thumbnail = parcel.readString()
+                    isEdited = parcel.readByte() != 0.toByte()
+                    postHint = parcel.readString()
+                    created = parcel.readDouble()
+                    linkFlairType = parcel.readString()
+                    wls = parcel.readInt()
+                    authorFlairType = parcel.readString()
+                    domain = parcel.readString()
+                    isAllowLiveComments = parcel.readByte() != 0.toByte()
+                    urlOverriddenByDest = parcel.readString()
+                    isArchived = parcel.readByte() != 0.toByte()
+                    isNoFollow = parcel.readByte() != 0.toByte()
+                    isPinned = parcel.readByte() != 0.toByte()
+                    isOver18 = parcel.readByte() != 0.toByte()
+                    isMediaOnly = parcel.readByte() != 0.toByte()
+                    isCanGild = parcel.readByte() != 0.toByte()
+                    isSpoiler = parcel.readByte() != 0.toByte()
+                    isLocked = parcel.readByte() != 0.toByte()
+                    authorFlairText = parcel.readString()
+                    isVisited = parcel.readByte() != 0.toByte()
+                    subredditId = parcel.readString()
+                    isAuthorIsBlocked = parcel.readByte() != 0.toByte()
+                    linkFlairBackgroundColor = parcel.readString()
+                    id = parcel.readString()
+                    author = parcel.readString()
+                    numComments = parcel.readInt()
+                    isSendReplies = parcel.readByte() != 0.toByte()
+                    whitelistStatus = parcel.readString()
+                    isContestMode = parcel.readByte() != 0.toByte()
+                    isAuthorPatreonFlair = parcel.readByte() != 0.toByte()
+                    authorFlairTextColor = parcel.readString()
+                    permalink = parcel.readString()
+                    parentWhitelistStatus = parcel.readString()
+                    isStickied = parcel.readByte() != 0.toByte()
+                    url = parcel.readString()
+                    subredditSubscribers = parcel.readInt()
+                    createdUtc = parcel.readDouble()
+                    numCrossposts = parcel.readInt()
+                    contentCategories = parcel.createStringArrayList()
+                    treatmentTags = parcel.createStringArrayList()
+                }
+
                 fun setIsOriginalContent(isOriginalContent: Boolean) {
                     isIsOriginalContent = isOriginalContent
                 }
@@ -427,7 +519,7 @@ class RedditResponseModel : Serializable {
 
                 class MediaEmbedBean
                 class SecureMediaEmbedBean
-                class GildingsBean : Serializable {
+                class GildingsBean {
                     @SerializedName("gid_1")
                     var gid1 = 0
 
@@ -438,14 +530,14 @@ class RedditResponseModel : Serializable {
                     var gid3 = 0
                 }
 
-                class PreviewBean : Serializable {
+                class PreviewBean {
                     @SerializedName("enabled")
                     var isEnabled = false
 
                     @SerializedName("images")
                     var images: List<ImagesBean>? = null
 
-                    class ImagesBean : Serializable {
+                    class ImagesBean {
                         @SerializedName("source")
                         var source: SourceBean? = null
 
@@ -460,7 +552,7 @@ class RedditResponseModel : Serializable {
 
                         class SourceBean
                         class VariantsBean
-                        class ResolutionsBean : Serializable {
+                        class ResolutionsBean {
                             @SerializedName("url")
                             var url: String? = null
 
@@ -473,7 +565,7 @@ class RedditResponseModel : Serializable {
                     }
                 }
 
-                class AllAwardingsBean : Serializable {
+                class AllAwardingsBean {
                     @SerializedName("giver_coin_reward")
                     var giverCoinReward = 0
 
@@ -574,7 +666,7 @@ class RedditResponseModel : Serializable {
                         isIsEnabled = isEnabled
                     }
 
-                    class ResizedIconsBean : Serializable {
+                    class ResizedIconsBean {
                         @SerializedName("url")
                         var url: String? = null
 
@@ -585,7 +677,7 @@ class RedditResponseModel : Serializable {
                         var height = 0
                     }
 
-                    class ResizedStaticIconsBean : Serializable {
+                    class ResizedStaticIconsBean {
                         @SerializedName("url")
                         var url: String? = null
 
@@ -594,6 +686,89 @@ class RedditResponseModel : Serializable {
 
                         @SerializedName("height")
                         var height = 0
+                    }
+                }
+
+                override fun writeToParcel(parcel: Parcel, flags: Int) {
+                    parcel.writeString(subreddit)
+                    parcel.writeString(selftext)
+                    parcel.writeString(authorFullname)
+                    parcel.writeByte(if (isSaved) 1 else 0)
+                    parcel.writeInt(gilded)
+                    parcel.writeByte(if (isClicked) 1 else 0)
+                    parcel.writeString(title)
+                    parcel.writeString(subredditNamePrefixed)
+                    parcel.writeByte(if (isHidden) 1 else 0)
+                    parcel.writeInt(pwls)
+                    parcel.writeInt(downs)
+                    parcel.writeInt(thumbnailHeight)
+                    parcel.writeString(topAwardedType)
+                    parcel.writeByte(if (isHideScore) 1 else 0)
+                    parcel.writeString(name)
+                    parcel.writeByte(if (isQuarantine) 1 else 0)
+                    parcel.writeString(linkFlairTextColor)
+                    parcel.writeDouble(upvoteRatio)
+                    parcel.writeString(authorFlairBackgroundColor)
+                    parcel.writeString(subredditType)
+                    parcel.writeInt(ups)
+                    parcel.writeInt(totalAwardsReceived)
+                    parcel.writeInt(thumbnailWidth)
+                    parcel.writeByte(if (isCanModPost) 1 else 0)
+                    parcel.writeInt(score)
+                    parcel.writeByte(if (isAuthorPremium) 1 else 0)
+                    parcel.writeString(thumbnail)
+                    parcel.writeByte(if (isEdited as Boolean) 1 else 0)
+                    parcel.writeString(postHint)
+                    parcel.writeDouble(created)
+                    parcel.writeString(linkFlairType)
+                    parcel.writeInt(wls)
+                    parcel.writeString(authorFlairType)
+                    parcel.writeString(domain)
+                    parcel.writeByte(if (isAllowLiveComments) 1 else 0)
+                    parcel.writeString(urlOverriddenByDest)
+                    parcel.writeByte(if (isArchived) 1 else 0)
+                    parcel.writeByte(if (isNoFollow) 1 else 0)
+                    parcel.writeByte(if (isPinned) 1 else 0)
+                    parcel.writeByte(if (isOver18) 1 else 0)
+                    parcel.writeByte(if (isMediaOnly) 1 else 0)
+                    parcel.writeByte(if (isCanGild) 1 else 0)
+                    parcel.writeByte(if (isSpoiler) 1 else 0)
+                    parcel.writeByte(if (isLocked) 1 else 0)
+                    parcel.writeString(authorFlairText)
+                    parcel.writeByte(if (isVisited) 1 else 0)
+                    parcel.writeString(subredditId)
+                    parcel.writeByte(if (isAuthorIsBlocked) 1 else 0)
+                    parcel.writeString(linkFlairBackgroundColor)
+                    parcel.writeString(id)
+                    parcel.writeString(author)
+                    parcel.writeInt(numComments)
+                    parcel.writeByte(if (isSendReplies) 1 else 0)
+                    parcel.writeString(whitelistStatus)
+                    parcel.writeByte(if (isContestMode) 1 else 0)
+                    parcel.writeByte(if (isAuthorPatreonFlair) 1 else 0)
+                    parcel.writeString(authorFlairTextColor)
+                    parcel.writeString(permalink)
+                    parcel.writeString(parentWhitelistStatus)
+                    parcel.writeByte(if (isStickied) 1 else 0)
+                    parcel.writeString(url)
+                    parcel.writeInt(subredditSubscribers)
+                    parcel.writeDouble(createdUtc)
+                    parcel.writeInt(numCrossposts)
+                    parcel.writeStringList(contentCategories)
+                    parcel.writeStringList(treatmentTags)
+                }
+
+                override fun describeContents(): Int {
+                    return 0
+                }
+
+                companion object CREATOR : Parcelable.Creator<DataBean> {
+                    override fun createFromParcel(parcel: Parcel): DataBean {
+                        return DataBean(parcel)
+                    }
+
+                    override fun newArray(size: Int): Array<DataBean?> {
+                        return arrayOfNulls(size)
                     }
                 }
             }

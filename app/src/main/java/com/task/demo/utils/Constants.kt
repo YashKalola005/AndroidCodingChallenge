@@ -11,13 +11,15 @@ import com.task.demo.R
 object Constants {
 
 
+
     val BASEURL = "https://www.reddit.com/r/all/top/"
     const val DOMAIN = "https://www.reddit.com/"
+
     const val SUBREDDIT = "all"
     const val LIMIT = 25
 
+    val ISREAD = "isRead"
 
-  //  var deleteAllData = false
 
     fun getProgressDialog(context: Activity): Dialog? {
         val builder = AlertDialog.Builder(context)

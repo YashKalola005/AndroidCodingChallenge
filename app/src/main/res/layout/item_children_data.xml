@@ -13,9 +13,11 @@
     <ImageView
         android:id="@+id/user_mage"
         android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/_5sdp"
         android:padding="@dimen/_3sdp"
         android:scaleType="centerCrop"
+        android:minHeight="@dimen/_70sdp"
         android:src="@drawable/place_holder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

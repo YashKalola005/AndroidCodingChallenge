@@ -64,7 +64,7 @@ class MainAdapter(_activity: Activity, pageListener: AdapterListener) :
             binding.btnDelete.setOnClickListener {
                 pageListener.onDelete(binding.root, position, redditResponseList)
             }
-            if (preferences.getBoolean(redditResponseModel.title + Constants.ISREAD)) {
+            if (preferences.getBoolean(redditResponseModel.title + Constants.IS_READ)) {
                 binding.star.setImageResource(R.drawable.fav_s)
 
             } else {
@@ -73,12 +73,12 @@ class MainAdapter(_activity: Activity, pageListener: AdapterListener) :
 
             binding.star.setOnClickListener {
                 var image: Int
-                if (preferences.getBoolean(redditResponseModel.title + Constants.ISREAD)) {
+                if (preferences.getBoolean(redditResponseModel.title + Constants.IS_READ)) {
                     image = R.drawable.fav
-                    preferences.setBoolean(redditResponseModel.title + Constants.ISREAD, false)
+                    preferences.setBoolean(redditResponseModel.title + Constants.IS_READ, false)
                 } else {
                     image = R.drawable.fav_s
-                    preferences.setBoolean(redditResponseModel.title + Constants.ISREAD, true)
+                    preferences.setBoolean(redditResponseModel.title + Constants.IS_READ, true)
                 }
                 setReadUnRead(activity, binding.star, image)
             }
@@ -98,9 +98,6 @@ class MainAdapter(_activity: Activity, pageListener: AdapterListener) :
 
             }
             if (position == redditResponseList.size - 1) {
-                /*if ((position + 1) % Constants.LIMIT == 0) {
-                    pageListener.onPage()
-                }*/
                 pageListener.onPage()
             }
 

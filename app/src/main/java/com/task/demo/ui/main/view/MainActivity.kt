@@ -6,7 +6,6 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +21,7 @@ import com.task.demo.ui.main.viewmodel.MainViewModel
 import com.task.demo.utils.AdapterListener
 import com.task.demo.utils.Constants
 import com.task.demo.utils.MyPreferences
+
 
 /**
  * Application Description: Android app that fetches
@@ -40,9 +40,7 @@ class MainActivity : BaseActivity() {
     private lateinit var myPreferences: MyPreferences
     private var after: String? = ""
 
-    //--------------------------
-    //region LifeCycle
-    //---------------------------
+
 
     override fun getLayoutView(): View {
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -67,6 +65,7 @@ class MainActivity : BaseActivity() {
         ).get(MainViewModel::class.java)
 
         setUpRecyclerView()
+
     }
 
     /**
@@ -115,12 +114,6 @@ class MainActivity : BaseActivity() {
     override fun onBack(): ImageView? {
         return null
     }
-
-    //--------------------------
-    //endregion
-    //--------------------------
-    //region Service Functions
-    //--------------------------
 
     /**
      * Calls the view model function that calls the required service
@@ -193,14 +186,9 @@ class MainActivity : BaseActivity() {
         anim.duration = 300
         binding.recyclerView.startAnimation(anim)
         Handler().postDelayed(Runnable {
-
             adapter.clearData()
             after = ""
         }, anim.duration)
     }
-
-    //---------------------
-    //endregion
-    //--------------------------
 
 }

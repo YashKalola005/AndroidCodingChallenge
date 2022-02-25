@@ -10,10 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.task.demo.R
-import com.task.demo.utils.Constants
+import com.task.demo.utils.CommonUtils
 
 /**
  * Class BaseActivity
@@ -29,10 +27,6 @@ abstract class BaseActivity : AppCompatActivity() {
     private lateinit var _alertDialog: AlertDialog;
     private var _progressDialog: Dialog? = null
 
-    //--------------------------
-    //region LifeCycle
-    //---------------------------
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (getLayoutView() != null) {
@@ -44,20 +38,12 @@ abstract class BaseActivity : AppCompatActivity() {
         if (onBack() != null) {
             onBack()?.setOnClickListener { onBackPressed() }
         }
-        _progressDialog = Constants.getProgressDialog(activity)
+        _progressDialog = CommonUtils.getProgressDialog(activity)
         initView()
         initProgressBar()
         setListener()
         populateData()
     }
-
-    //---------------------
-    //endregion
-    //----------------------
-
-    //--------------------------
-    //region ProgressBar
-    //---------------------------
 
     private fun initProgressBar() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
@@ -91,12 +77,6 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    //--------------------------
-    //endregion ProgressBar
-    //---------------------------
-    //region PROTECTED
-    //---------------------------
-
     protected abstract fun getLayoutView(): View
     protected abstract fun getLayoutRes(): Int
     protected abstract fun initView()
@@ -104,7 +84,5 @@ abstract class BaseActivity : AppCompatActivity() {
     protected abstract fun populateData()
     protected abstract fun onBack(): ImageView?
 
-    //--------------------------
-    //endregion PROTECTED
-    //---------------------------
+
 }

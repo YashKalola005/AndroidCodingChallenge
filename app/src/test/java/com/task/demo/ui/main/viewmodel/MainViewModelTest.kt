@@ -1,48 +1,62 @@
 package com.task.demo.ui.main.viewmodel
 
-import assertk.assertThat
-import assertk.assertions.isEqualTo
+
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.task.demo.data.api.RetrofitService
 import com.task.demo.data.model.RedditResponseModel
-
-import org.junit.Assert.*
-
-import junit.framework.TestCase
-import kotlinx.coroutines.*
+import com.task.demo.ui.main.view.MainActivity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
+import retrofit2.Call
 import retrofit2.Response
+import java.io.IOException
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotEqualTo
 
-@Config(maxSdk = 32)
+
 @RunWith(RobolectricTestRunner::class)
 class MainViewModelTest {
 
-    private val url: String = "https://www.reddit.com/r/all/top/.json?t=all&limit=25"
-    private val mockViewModelTest = mock<MainViewModel>()
+    private var retrofitService = mock<RetrofitService>()
+    private val validUrl: String = "https://www.reddit.com/r/all/top/.json?t=all&limit=25"
+    private val inValidUrl: String = "https://www.reddit.com/rasa/all/top/.json?t=all"
+
 
     @Before
     fun setUp() {
+        retrofitService = RetrofitService.getInstance()
     }
 
     @After
     fun tearDown() {
     }
 
+
+    /**
+     * Check valid API call
+     */
     @Test
-    suspend fun givenTheApiResponseIsOK_whenExecuteIsCalled_thenApiResultOKIsReturned() {
-        val mockApiRequest = mock<RetrofitService>()
-        val mockApiResponse = mock<Response<RedditResponseModel>>()
-        whenever(mockApiRequest.getAllData(url)).thenReturn(
-            mockApiResponse
-        )
-        whenever(mockApiResponse.isSuccessful).thenReturn(true)
+    fun validApiCall() {
+        var call: Call<RedditResponseModel?> = retrofitService.getAllDataForTest(validUrl)!!
+
+        val response: Response<RedditResponseModel?> = call.execute()
+        assertThat(response.code()).isEqualTo(200)
     }
 
+    /**
+     * Check invalid API call
+     */
+    @Test
+    fun inValidApiCall() {
+        var call: Call<RedditResponseModel?> = retrofitService.getAllDataForTest(inValidUrl)!!
 
+        val response: Response<RedditResponseModel?> = call.execute()
+        println("Response Code: ${response.code()}")
+        assertThat(response.code()).isNotEqualTo(200)
+    }
 }

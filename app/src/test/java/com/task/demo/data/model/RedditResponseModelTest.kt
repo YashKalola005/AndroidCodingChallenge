@@ -14,7 +14,7 @@ import com.task.demo.ui.main.view.MainActivity
 import org.junit.After
 import org.robolectric.annotation.Config
 
-@Config(maxSdk = 32)
+
 @RunWith(RobolectricTestRunner::class)
 class RedditResponseModelTest {
     private val mocResponseModel = mock<RedditResponseModel>()

@@ -11,15 +11,14 @@ import android.content.SharedPreferences
  * @version 1.0
  * @since   2022-02-22
  */
-class MyPreferences {
+class MyPreferences(context: Context) {
 
 
     private lateinit var pref: SharedPreferences
-    private var parentActivity: Context? = null
+    private var parentActivity: Context? = context
     private var appKey: String? = null
 
-    constructor(context: Context) {
-        parentActivity = context
+    init {
         appKey = context.packageName.replace("\\.".toRegex(), "_").toLowerCase()
     }
 

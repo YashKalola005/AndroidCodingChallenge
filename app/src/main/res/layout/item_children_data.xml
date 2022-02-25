@@ -10,7 +10,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/_5sdp">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/user_mage"
         android:layout_width="@dimen/_50sdp"
         android:layout_height="0dp"
@@ -52,7 +52,7 @@
         app:layout_constraintTop_toBottomOf="@+id/title"
         tools:text="Author" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/star"
         android:layout_width="@dimen/_20sdp"
         android:layout_height="@dimen/_20sdp"

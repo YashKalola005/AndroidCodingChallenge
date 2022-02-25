@@ -1,7 +1,6 @@
 package com.task.demo.utils
 
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.task.demo.data.model.RedditResponseModel
 
 interface AdapterListener {

@@ -1,13 +1,17 @@
 package com.task.demo.data.model
 
-import android.database.Cursor
 import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 /**
- * This class represents a Reddit API response
+ * Class RedditResponseModel
+ * Description: This class represents a Reddit API response
+ *
+ * @author  Yash Kalola
+ * @version 1.0
+ * @since   2022-02-21
  */
 class RedditResponseModel : Serializable {
 

@@ -9,7 +9,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-@Config(maxSdk = 32)
+
 @RunWith(RobolectricTestRunner::class)
 class BaseActivityTest  {
     @Before

@@ -1,14 +1,16 @@
 package com.task.demo.ui.main.viewmodel
 
-import android.widget.Toast
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.RecyclerView
 import com.task.demo.data.model.RedditResponseModel
 import com.task.demo.data.repository.MainRepository
-import com.task.demo.utils.CommonUtils
-import com.task.demo.utils.MyApp
+import com.task.demo.utils.*
 
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
 /**
  * Class MainViewModel
@@ -18,52 +20,45 @@ import kotlinx.coroutines.*
  * @version 1.0
  * @since   2022-02-21
  */
-class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
+class MainViewModel @Inject constructor(
+    private val mainRepository: MainRepository,
+    private val networkHelper: NetworkHelper
+) : ViewModel() {
 
-    val errorMessage = MutableLiveData<String>()
-    val data = MutableLiveData<RedditResponseModel>()
-    private var job: Job? = null
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        onError("Exception handled: ${throwable.localizedMessage}")
-    }
-    val loading = MutableLiveData<Boolean>()
+    private val _data = MutableLiveData<Resource<RedditResponseModel>>()
+
 
     /**
      * Calls the service that makes the API call with appropriate parameters
      */
-    fun getData(url: String?) {
-        if (CommonUtils.isNetworkAvailable(MyApp.getAppContext())) {
-            job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                loading.postValue(true)
-                val response = mainRepository.getAllData(url)
-                withContext(Dispatchers.Main) {
-                    if (response!!.isSuccessful) {
-                        data.postValue(response.body())
-                        loading.postValue(false)
-                    } else {
-                        onError("Error : ${response.message()} ")
-                    }
-                }
-            }
+    val data: LiveData<Resource<RedditResponseModel>>
+        get() = _data
+
+
+    fun getData(after: String?) {
+        var baseUrl: String? = Constants.DOMAIN + "r/" + Constants.SUBREDDIT + "/top/.json?t=all"
+        baseUrl = if (after!!.isEmpty()) {
+            baseUrl + "&limit=" + Constants.LIMIT
         } else {
-            Toast.makeText(
-                MyApp.getAppContext(),
-                "Please check Network connection!",
-                Toast.LENGTH_SHORT
-            ).show()
+            baseUrl + "&limit=" + Constants.LIMIT + "&after=" + after
         }
-
-
+        getRedditData(baseUrl)
     }
 
-    private fun onError(message: String) {
-        errorMessage.value = message
-        loading.value = false
+
+    private fun getRedditData(url: String?) {
+        viewModelScope.launch {
+            _data.postValue(Resource.loading(null))
+            if (networkHelper.isNetworkConnected()) {
+                mainRepository.getAllData(url)?.let {
+                    if (it.isSuccessful) {
+                        _data.postValue(Resource.success(it.body()))
+                    } else _data.postValue(Resource.error(it.errorBody().toString(), null))
+                }
+            } else _data.postValue(Resource.error("Please check Network connection!", null))
+
+        }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        job?.cancel()
-    }
 
 }

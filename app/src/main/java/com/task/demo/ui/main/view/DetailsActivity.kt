@@ -13,16 +13,22 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide
+import androidx.lifecycle.ViewModelProvider
 import com.task.demo.R
-import com.task.demo.data.model.RedditResponseModel
 import com.task.demo.databinding.ActivityDetailsBinding
 import com.task.demo.ui.base.BaseActivity
+import com.task.demo.ui.main.viewmodel.DetailsViewModel
 import com.task.demo.utils.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
+import com.task.demo.data.model.RedditResponseDTO
+
 
 /**
  * Class DetailsActivity
@@ -35,11 +41,13 @@ import java.io.File
 class DetailsActivity : BaseActivity() {
 
     lateinit var binding: ActivityDetailsBinding
-    var redditResponseModel: RedditResponseModel.Data1Bean.ChildrenBean.DataBean? = null
+    private lateinit var viewModel: DetailsViewModel
+    private var redditResponseDTO: RedditResponseDTO? = null
 
 
     override fun getLayoutView(): View {
-        binding = ActivityDetailsBinding.inflate(layoutInflater)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_details)
+
         return binding.root
     }
 
@@ -51,9 +59,12 @@ class DetailsActivity : BaseActivity() {
      * Parse data from the post that has been clicked on into RedditResponseModel
      */
     override fun initView() {
+        viewModel = ViewModelProvider(this,)[DetailsViewModel::class.java]
+        binding.viewModel = viewModel
         val intent = this.intent
         val bundle = intent.extras
-        redditResponseModel = bundle?.getParcelable("Data")
+        redditResponseDTO = bundle?.getSerializable("Data") as RedditResponseDTO
+
     }
 
     override fun setListener() {
@@ -71,18 +82,18 @@ class DetailsActivity : BaseActivity() {
      * Populate Reddit post details from the API response in UI
      */
     override fun populateData() {
-        redditResponseModel?.let {
-            binding.title.text = it.title
-            binding.author.text = "- " + it.author
-            binding.comments.text = it.numComments.toString() + " Comments"
-            binding.date.text = getTimeInHours(it.created)
-            Glide.with(activity)
-                .load(it.url)
-                .placeholder(getDrawable(R.drawable.place_holder))
-                .error(getDrawable(R.drawable.place_holder))
-                .into(binding.image)
-        }
+        redditResponseDTO?.let { it ->
+            viewModel.setData(it)
+            viewModel.url.observe(this, Observer {
+                it?.let { url ->
+                    Glide.with(activity).load(url)
+                        .placeholder(activity.resources.getDrawable(R.drawable.place_holder))
+                        .error(activity.resources.getDrawable(R.drawable.place_holder))
+                        .into(binding.image)
+                }
+            })
 
+        }
     }
 
     override fun onBack(): ImageView? {
@@ -112,7 +123,7 @@ class DetailsActivity : BaseActivity() {
                 requestCode
             )
         } else {
-            redditResponseModel?.url?.let { it1 ->
+            redditResponseDTO?.url?.let { it1 ->
                 CoroutineScope(Dispatchers.IO).launch {
                     downloadImage(it1)
                 }
@@ -120,16 +131,6 @@ class DetailsActivity : BaseActivity() {
         }
     }
 
-
-    /**
-     * Converts milliseconds into hours
-     */
-    fun getTimeInHours(created: Double): CharSequence? {
-        var hours = ((created / (1000 * 60 * 60)) % 24).toString()
-        hours = hours.substringBefore(".")
-        return "$hours hours ago";
-
-    }
 
     /**
      * Function responsible for downloading post thumbnail image

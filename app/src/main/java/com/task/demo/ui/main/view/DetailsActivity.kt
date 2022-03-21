@@ -13,21 +13,21 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import com.task.demo.R
+import com.task.demo.data.model.RedditResponseDTO
 import com.task.demo.databinding.ActivityDetailsBinding
 import com.task.demo.ui.base.BaseActivity
 import com.task.demo.ui.main.viewmodel.DetailsViewModel
 import com.task.demo.utils.Constants
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
-
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import com.bumptech.glide.Glide
-import com.task.demo.data.model.RedditResponseDTO
+import javax.inject.Inject
 
 
 /**
@@ -38,16 +38,17 @@ import com.task.demo.data.model.RedditResponseDTO
  * @version 1.0
  * @since   2022-02-22
  */
+@AndroidEntryPoint
 class DetailsActivity : BaseActivity() {
 
-    lateinit var binding: ActivityDetailsBinding
-    private lateinit var viewModel: DetailsViewModel
-    private var redditResponseDTO: RedditResponseDTO? = null
+    @Inject
+    lateinit var viewModel: DetailsViewModel
 
+    lateinit var binding: ActivityDetailsBinding
+    private var redditResponseDTO: RedditResponseDTO? = null
 
     override fun getLayoutView(): View {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_details)
-
         return binding.root
     }
 
@@ -59,7 +60,6 @@ class DetailsActivity : BaseActivity() {
      * Parse data from the post that has been clicked on into RedditResponseModel
      */
     override fun initView() {
-        viewModel = ViewModelProvider(this,)[DetailsViewModel::class.java]
         binding.viewModel = viewModel
         val intent = this.intent
         val bundle = intent.extras
@@ -72,9 +72,7 @@ class DetailsActivity : BaseActivity() {
             checkPermission(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                200
-            )
-
+                200)
         }
     }
 
@@ -92,11 +90,10 @@ class DetailsActivity : BaseActivity() {
                         .into(binding.image)
                 }
             })
-
         }
     }
 
-    override fun onBack(): ImageView? {
+    override fun onBack(): ImageView {
         return binding.btnBack
     }
 

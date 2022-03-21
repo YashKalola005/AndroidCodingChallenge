@@ -5,18 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.task.demo.R
 import com.task.demo.data.model.RedditResponseDTO
-import com.task.demo.utils.MyApp
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 
-class DetailsViewModel @Inject constructor() : ViewModel() {
+class DetailsViewModel @Inject constructor(@ApplicationContext context: Context) : ViewModel() {
 
     var title = MutableLiveData<String>()
     var author = MutableLiveData<String>()
     var comments = MutableLiveData<String>()
     var date = MutableLiveData<String>()
     var url = MutableLiveData<String>()
-    val context: Context = MyApp.getAppContext()
+    val context: Context = context
 
 
     fun setData(dataBeen: RedditResponseDTO) {
@@ -32,14 +32,12 @@ class DetailsViewModel @Inject constructor() : ViewModel() {
     /**
      * Converts milliseconds into hours
      */
-    private fun getTimeInHours(created: Double): CharSequence? {
+    fun getTimeInHours(created: Double): CharSequence? {
         var hours = ((created / (1000 * 60 * 60)) % 24).toString()
         hours = hours.substringBefore(".")
         return "$hours hours ago"
 
     }
-
-
 
 
 }

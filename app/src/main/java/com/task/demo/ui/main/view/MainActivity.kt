@@ -1,26 +1,27 @@
 package com.task.demo.ui.main.view
 
+import android.content.Intent
+import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.task.demo.R
-import com.task.demo.data.api.RetrofitService
+import com.task.demo.data.model.RedditResponseDTO
 import com.task.demo.data.model.RedditResponseModel
-import com.task.demo.data.repository.MainRepository
 import com.task.demo.databinding.ActivityMainBinding
 import com.task.demo.ui.base.BaseActivity
-import com.task.demo.ui.base.MyViewModelFactory
 import com.task.demo.ui.main.adapter.MainAdapter
 import com.task.demo.ui.main.viewmodel.MainViewModel
 import com.task.demo.utils.AdapterListener
-import com.task.demo.utils.Constants
 import com.task.demo.utils.MyPreferences
+import com.task.demo.utils.Status
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 /**
@@ -32,14 +33,18 @@ import com.task.demo.utils.MyPreferences
  * @version 1.0
  * @since   2022-02-21
  */
+@AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
-    private lateinit var viewModel: MainViewModel
+
+    @Inject
+    lateinit var viewModel: MainViewModel
+
+    @Inject
+    lateinit var myPreferences: MyPreferences
+
     private lateinit var adapter: MainAdapter
     lateinit var binding: ActivityMainBinding
-    private lateinit var myPreferences: MyPreferences
-    private var after: String? = ""
-
 
 
     override fun getLayoutView(): View {
@@ -55,17 +60,7 @@ class MainActivity : BaseActivity() {
      * Initialize preferences and view model
      */
     override fun initView() {
-        myPreferences = MyPreferences(activity)
-        val retrofitService = RetrofitService.getInstance()
-        val mainRepository = MainRepository(retrofitService)
-
-        viewModel = ViewModelProvider(
-            this,
-            MyViewModelFactory(mainRepository)
-        ).get(MainViewModel::class.java)
-
         setUpRecyclerView()
-
     }
 
     /**
@@ -73,40 +68,37 @@ class MainActivity : BaseActivity() {
      */
     override fun setListener() {
         binding.swipeRefresh.setOnRefreshListener {
-            adapter.clearData()
-            after = ""
+            adapter.submitList(null)
             binding.swipeRefresh.isRefreshing = false
             getData()
         }
 
         binding.btnDeleteAll.setOnClickListener {
-            deleteAllItems()
+            deleteItem(binding.recyclerView, 0, null, true)
         }
     }
 
     /**
      * Populate Reddit top posts from the API response in UI
      */
+
     override fun populateData() {
-
         viewModel.data.observe(this) {
-            after = it.getData1()!!.after.toString()
-
-            adapter.addData(it)
-        }
-
-        viewModel.errorMessage.observe(this) {
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-        }
-
-        viewModel.loading.observe(this, Observer {
-            if (it) {
-                showProgressBar()
-            } else {
-                hideProgressBar()
+            when (it.status) {
+                Status.SUCCESS -> {
+                    hideProgressBar()
+                    it.data?.let { data -> adapter.addData(data) }
+                    binding.recyclerView.visibility = View.VISIBLE
+                }
+                Status.LOADING -> {
+                    showProgressBar()
+                }
+                Status.ERROR -> {
+                    hideProgressBar()
+                    Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
+                }
             }
-        })
-
+        }
         getData()
     }
 
@@ -119,14 +111,7 @@ class MainActivity : BaseActivity() {
      * Calls the view model function that calls the required service
      */
     private fun getData() {
-        var baseUrl: String? = Constants.DOMAIN + "r/" + Constants.SUBREDDIT + "/top/.json?t=all"
-
-        baseUrl = if (after!!.isEmpty()) {
-            baseUrl + "&limit=" + Constants.LIMIT
-        } else {
-            baseUrl + "&limit=" + Constants.LIMIT + "&after=" + after
-        }
-        viewModel.getData(baseUrl)
+        viewModel.getRedditData()
     }
 
     /**
@@ -134,7 +119,24 @@ class MainActivity : BaseActivity() {
      */
     private fun setUpRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = MainAdapter(activity, object : AdapterListener {
+        adapter = MainAdapter(object : AdapterListener {
+            override fun onItemClick(redditResponseModel: RedditResponseModel.Data1Bean.ChildrenBean.DataBean) {
+                try {
+                    val data = RedditResponseDTO(
+                        title = redditResponseModel.title,
+                        author = redditResponseModel.author,
+                        thumbnail = redditResponseModel.thumbnail,
+                        num_comments = redditResponseModel.numComments,
+                        created = redditResponseModel.created,
+                        url = redditResponseModel.url
+                    )
+                    val bundle = Bundle()
+                    bundle.putSerializable("Data", data)
+                    startActivity(Intent(activity, DetailsActivity::class.java).putExtras(bundle))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
 
             override fun onPage() {
                 getData()
@@ -145,9 +147,9 @@ class MainActivity : BaseActivity() {
                 position: Int,
                 redditResponseList: ArrayList<RedditResponseModel.Data1Bean.ChildrenBean>
             ) {
-                deleteItem(root, position, redditResponseList)
+                deleteItem(root, position, redditResponseList, false)
             }
-        })
+        }, myPreferences)
         binding.recyclerView.adapter = adapter
     }
 
@@ -157,38 +159,27 @@ class MainActivity : BaseActivity() {
     private fun deleteItem(
         root: View,
         position: Int,
-        redditResponseList: ArrayList<RedditResponseModel.Data1Bean.ChildrenBean>
-    ) {
-        val anim: Animation = AnimationUtils.loadAnimation(
-            activity,
-            android.R.anim.slide_out_right
-        )
+        redditResponseList: ArrayList<RedditResponseModel.Data1Bean.ChildrenBean>?,
+        deleteAll: Boolean)
+    {
+        val anim: Animation = AnimationUtils.loadAnimation(activity, android.R.anim.slide_out_right)
         anim.duration = 300
         root.startAnimation(anim)
-        Handler().postDelayed(Runnable {
-            if (redditResponseList.size == 0) {
-                return@Runnable
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (deleteAll) {
+                adapter.submitList(null)
+            } else {
+                if (redditResponseList?.size == 0) {
+                    return@postDelayed
+                }
+                redditResponseList?.removeAt(position)
+                redditResponseList?.let { adapter.submitList(it) }
+
             }
-            //  myPreferences.setBoolean(childrenList[position].data!!.title, true)
-            redditResponseList.removeAt(position) //Remove the current content from the array
             adapter.notifyDataSetChanged()
         }, anim.duration)
     }
 
-    /**
-     * Function used to delete all items from the subreddit post list
-     */
-    private fun deleteAllItems() {
-        val anim: Animation = AnimationUtils.loadAnimation(
-            activity,
-            android.R.anim.slide_out_right
-        )
-        anim.duration = 300
-        binding.recyclerView.startAnimation(anim)
-        Handler().postDelayed(Runnable {
-            adapter.clearData()
-            after = ""
-        }, anim.duration)
-    }
 
 }

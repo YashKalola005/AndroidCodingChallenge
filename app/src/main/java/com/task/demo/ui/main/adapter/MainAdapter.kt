@@ -36,8 +36,6 @@ class MainAdapter @Inject constructor(
     private val adapterListener: AdapterListener = adapterListener
     private val myPreferences: MyPreferences = myPreferences
 
-    private val TAG = "debinf PurchaseAdap"
-
 
     private val DIFF_CALLBACK: DiffUtil.ItemCallback<RedditResponseModel.Data1Bean.ChildrenBean> =
         object : DiffUtil.ItemCallback<RedditResponseModel.Data1Bean.ChildrenBean>() {
@@ -82,8 +80,6 @@ class MainAdapter @Inject constructor(
             differ: AsyncListDiffer<RedditResponseModel.Data1Bean.ChildrenBean>
         ) {
 
-
-//            var redditResponseModel: RedditResponseModel.Data1Bean.ChildrenBean.DataBean? = redditResponseList[position].data
             var redditResponseModel: RedditResponseModel.Data1Bean.ChildrenBean.DataBean? =
                 differ.currentList[position].data
 
@@ -100,7 +96,7 @@ class MainAdapter @Inject constructor(
                     .into(binding.userMage)
 
                 binding.btnDelete.setOnClickListener {
-                    listener.onDelete(binding.root, position, redditResponseList, differ)
+                    listener.onDelete(binding.root, position, redditResponseList)
                 }
                 if (myPreferences.getBoolean(redditResponseModel.title + Constants.IS_READ)
                 ) {
@@ -132,10 +128,6 @@ class MainAdapter @Inject constructor(
                 itemView.setOnClickListener {
                     listener.onItemClick(redditResponseModel)
                 }
-
-                /*if (position == redditResponseList.size - 1) {
-                    listener.onPage()
-                }*/
 
                 if (position == differ.currentList.size - 1) {
                     listener.onPage()

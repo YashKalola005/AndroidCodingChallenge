@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Demo</string>
+
+    <string name="dash">-</string>
+    <string name="comment"> Comments</string>
+    <string name="app_key">MyPreferences</string>
+
 </resources>

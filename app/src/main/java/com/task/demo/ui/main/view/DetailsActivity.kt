@@ -13,20 +13,23 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import com.bumptech.glide.Glide
+import androidx.lifecycle.ViewModelProvider
 import com.task.demo.R
-import com.task.demo.data.model.RedditResponseDTO
 import com.task.demo.databinding.ActivityDetailsBinding
 import com.task.demo.ui.base.BaseActivity
 import com.task.demo.ui.main.viewmodel.DetailsViewModel
 import com.task.demo.utils.Constants
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
+import com.task.demo.data.model.RedditResponseDTO
+import com.task.demo.ui.main.viewmodel.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 
@@ -49,6 +52,7 @@ class DetailsActivity : BaseActivity() {
 
     override fun getLayoutView(): View {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_details)
+
         return binding.root
     }
 

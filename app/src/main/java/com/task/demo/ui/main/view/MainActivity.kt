@@ -22,6 +22,7 @@ import com.task.demo.utils.MyPreferences
 import com.task.demo.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 /**
@@ -35,7 +36,6 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
-
 
     @Inject
     lateinit var viewModel: MainViewModel

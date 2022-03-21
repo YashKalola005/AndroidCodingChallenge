@@ -1,8 +1,7 @@
 package com.task.demo.utils
 
 object Constants {
-    const val BASEURL = "https://www.reddit.com/r/all/top/"
-    const val DOMAIN = "https://www.reddit.com/"
+    const val BASEURL = "https://www.reddit.com/r/"
     const val SUBREDDIT = "all"
     const val LIMIT = 25
     const val IS_READ = "isRead"

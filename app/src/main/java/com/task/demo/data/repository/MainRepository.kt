@@ -13,6 +13,6 @@ import javax.inject.Inject
  */
 class MainRepository @Inject constructor(private val retrofitService: RetrofitService) {
 
-    suspend fun getAllData(endpoint: String?) = retrofitService.getAllData(endpoint)
+    suspend fun getAllData(subreddit: String?, limit: Int, after: String?) = retrofitService.getAllData(subreddit,limit,after)
 
 }

@@ -5,18 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.task.demo.R
 import com.task.demo.data.model.RedditResponseDTO
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.task.demo.utils.MyApp
 import javax.inject.Inject
 
 
-class DetailsViewModel @Inject constructor(@ApplicationContext context: Context) : ViewModel() {
+class DetailsViewModel  @Inject constructor() : ViewModel() {
 
     var title = MutableLiveData<String>()
     var author = MutableLiveData<String>()
     var comments = MutableLiveData<String>()
     var date = MutableLiveData<String>()
     var url = MutableLiveData<String>()
-    val context: Context = context
+    val context: Context = MyApp.getAppContext()
 
 
     fun setData(dataBeen: RedditResponseDTO) {
